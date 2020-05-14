@@ -1,5 +1,5 @@
 'use strict';
-
+/*提示框 dialog*/
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
