@@ -123,6 +123,7 @@ function condition_specific_correlation(g1, g2, info){
  * 将id_main_input_preview中的内容转换为Json
  */
 function convertStringToJson(strGene1, strGene2, strInformation) {
+    
     if(strGene1 != "" && strGene2 != "") {
         var isJsonGene1 = isJson(strGene1);
         var isJsonGene2 = isJson(strGene2);
@@ -131,7 +132,7 @@ function convertStringToJson(strGene1, strGene2, strInformation) {
             G1 = eval('(' + strGene1 + ')');
             G2 = eval('(' + strGene2 + ')');
             if (isJsonInformation) {
-                INFO = eval('(' + strInformation + ')');
+                var jsonInformation = eval('(' + strInformation + ')');
             }
             else {
                 errorCode(106);
@@ -143,7 +144,7 @@ function convertStringToJson(strGene1, strGene2, strInformation) {
                 errorCode(108);
             }
             else {
-		return isJsonInformation;
+                makeJsonIntoArray(jsonGene1, jsonGene2, jsonInformation, isJsonInformation);
             }
         }
         else {
@@ -156,6 +157,19 @@ function convertStringToJson(strGene1, strGene2, strInformation) {
             if (!isJsonInformation) {
                 errorCode(106);
             }
+            if (!isJsonGene1&&!isJsonGene2) {
+                errorCode(113);
+            }
+            if (!isJsonGene1&&!isJsonInformation) {
+                errorCode(114);
+            }
+            if (!isJsonGene2&&!isJsonInformation) {
+                errorCode(115);
+            }
+            if (!isJsonGene1&&!isJsonGene2&&!isJsonInformation) {
+                errorCode(116);
+            }
+
         }
     }
     else {
@@ -168,6 +182,19 @@ function convertStringToJson(strGene1, strGene2, strInformation) {
         if (strInformation == "") {
             errorCode(103);
         }
+        if (strGene1 == ""&&strGene2 == "") {
+            errorCode(109);
+        }
+        if (strGene1 == ""&&strInformation == "") {
+            errorCode(110);
+        }
+        if (strGene2 == ""&&strInformation == "") {
+            errorCode(111);
+        }
+        if (strGene1 == ""&&strGene2 == ""&&strInformation == "") {
+            errorCode(112);
+        }
+        
     }
 }
 //使用json文件内容计算并赋值给tissues, datas, details,gene1,gene2等全局变量
@@ -714,17 +741,32 @@ function getDetatils() {
 
 function errorCode(temp) {
     var code = {
-                '100': 'your browser does not support FileReader objects',
-                '101': 'lack gene1 file',
-                '102': 'lack gene2 file',
-                '103': 'lack information file',
-                '104': 'invalid json format in gene1 file',
-                '105': 'invalid json format in gene2 file',
-                '106': 'invalid json format in information file',
-                '107': 'sample already exists, no need to add it again',
-                '108': 'wrong format for the expression levels of gene1 or gene2. Please refer to input file format for a sample format.'
+                '100': 'Your browser does not support FileReader objects （Error code 100）',
+                '101': 'Missing gene 1 file （Error code 101）',
+                '102': 'Missing gene 2 file （Error code 102）',
+                '103': 'Missing information file （Error code 103）',
+                '104': 'Invalid json format in gene1 file （Error code 104）',
+                '105': 'Invalid json format in gene2 file （Error code 105）',
+                '106': 'Invalid json format in information file （Error code 106）',
+                '107': 'Sample already exists, no need to add it again （Error code 107）',
+                '108': 'Invalid gene1, gene2, or information uploading order, please upload again by right order （Error code 108）',
+                '109': 'Missing gene 1 and gene 2 files （Error code 109）',
+                '110': 'Missing gene 1 and information files （Error code 110）',
+                '111': 'Missing gene 2 and information files （Error code 111）',
+                '112': 'Missing all files （Error code 112）',
+                '113': 'Invalid json format in gene1 and gene2 files （Error code 113）',
+                '114': 'Invalid json format in gene1 and information files （Error code 114）',
+                '115': 'Invalid json format in gene2 and information files （Error code 115）',
+                '116': 'Invalid json format in all files （Error code 116）'
+
                }
-    alert("Error " + temp + ": " + code[temp]);
+    //alert("Error " + temp + ": " + code[temp]);
+    $.gDialog.alert( code[temp], {
+        title: "Error",
+        animateIn: "bounceIn",
+        animateOut: "bounceOut"
+      });
+
 }
 function isJson(str) {
     if (typeof str == 'string') {
